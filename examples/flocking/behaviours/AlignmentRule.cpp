@@ -19,11 +19,11 @@ Vector2f AlignmentRule::computeForce(const std::vector<Boid*>& neighborhood, Boi
   {
     if(neighborhood[i] != boid)
     {
-      double distanceX = boid->getPosition()->X - neighborhood[i]->getPosition().x;
-      double distanceY = boid->getPosition()->Y - neighborhood[i]->getPosition().y;
+      double distanceX = boid->getPosition().x - neighborhood[i]->getPosition().x;
+      double distanceY = boid->getPosition().x - neighborhood[i]->getPosition().y;
       double distance = sqrt(distanceX * distanceX + distanceY * distanceY);
 
-      if(distance <= boid->getRadius())
+      if(distance <= boid->getDetectionRadius())
       {
         centerOfMass += neighborhood[i]->getPosition();
         counter++;
