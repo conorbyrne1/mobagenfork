@@ -1,5 +1,6 @@
 #include "AlignmentRule.h"
 #include "../gameobjects/Boid.h"
+#include <math.h>
 
 Vector2f AlignmentRule::computeForce(const std::vector<Boid*>& neighborhood, Boid* boid) {
   // Try to match the heading of neighbors = Average velocity
@@ -20,11 +21,11 @@ Vector2f AlignmentRule::computeForce(const std::vector<Boid*>& neighborhood, Boi
     {
       double distanceX = boid->getPosition()->X - neighborhood[i]->getPosition().x;
       double distanceY = boid->getPosition()->Y - neighborhood[i]->getPosition().y;
-     // double distance = sqrt(distanceX * distanceX + distanceY * distanceY);
+      double distance = sqrt(distanceX * distanceX + distanceY * distanceY);
 
-      if(distance <= radius)
+      if(distance <= boid->getRadius())
       {
-        centerOfMass += boids[i].position;
+        centerOfMass += neighborhood[i]->getPosition();
         counter++;
       }
     }
@@ -36,7 +37,7 @@ Vector2f AlignmentRule::computeForce(const std::vector<Boid*>& neighborhood, Boi
 
   centerOfMass = centerOfMass / counter;
 
-  Vector2f forceDirection = centerOfMass - targetBoid.position;
+  Vector2f forceDirection = centerOfMass - boid->getPosition();
 
   double magnitude = sqrt(forceDirection.x * forceDirection.x + forceDirection.y * forceDirection.y);
   if(magnitude > 0)
