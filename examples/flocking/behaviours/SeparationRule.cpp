@@ -16,6 +16,49 @@ Vector2f SeparationRule::computeForce(const std::vector<Boid*>& neighborhood, Bo
   //        // todo: find and apply force only on the closest mates
   //    }
 
+// Formal code
+  Vector2f accumulator = Vector2f(0, 0);
+  Vector2f positionVector = Vector2f(0,0);
+  Vector2f unitVector = Vector2f(0, 0);
+  double magnitude = 0.0;
+  int count = 0;
+
+  for(int i = 0; i < neighborhood.size(); i++)
+  {
+    if (neighborhood[i] == boid)
+    {
+      continue;
+    }
+    else
+    {
+      positionVector = boid->getPosition() - neighborhood[i]->getPosition();
+      magnitude = positionVector.getMagnitude();
+      if (magnitude > 0)
+      {
+        unitVector = positionVector / magnitude;
+      }
+      if (magnitude <= desiredMinimalDistance && magnitude > 0)
+      {
+        accumulator += unitVector/magnitude;
+        count++;
+      }
+    }
+
+  }
+  if (accumulator.getMagnitude() > weight)
+  {
+    //return (accumulator / accumulator.getMagnitude()) * maxForce;
+    separatingForce = (accumulator / accumulator.getMagnitude()) * weight;
+  }
+  else {
+    separatingForce = accumulator;
+  }
+
+  //return accumulator;
+
+// End of formal code
+
+
   separatingForce = Vector2f::normalized(separatingForce);
 
   return separatingForce;

@@ -1,6 +1,5 @@
 #include "AlignmentRule.h"
 #include "../gameobjects/Boid.h"
-#include <math.h>
 
 Vector2f AlignmentRule::computeForce(const std::vector<Boid*>& neighborhood, Boid* boid) {
   // Try to match the heading of neighbors = Average velocity
@@ -11,42 +10,22 @@ Vector2f AlignmentRule::computeForce(const std::vector<Boid*>& neighborhood, Boi
 
 
   //code from formal
-  Vector2f centerOfMass = Vector2f(0, 0);
-  //Boid targetBoid = boids[boidAgentIndex];
-  int counter = 0;
-
+  Vector2f accumulator = Vector2f(0, 0);
+  int count = 0;
   for(int i = 0; i < neighborhood.size(); i++)
   {
-    if(neighborhood[i] != boid)
-    {
-      double distanceX = boid->getPosition().x - neighborhood[i]->getPosition().x;
-      double distanceY = boid->getPosition().x - neighborhood[i]->getPosition().y;
-      double distance = sqrt(distanceX * distanceX + distanceY * distanceY);
+    //double DistanceX = boids[boidAgentIndex].position.x - boids[i].position.x;
+    //double DistanceY = boids[boidAgentIndex].position.y - boids[i].position.y;
+    //double distance = sqrt(DistanceX * DistanceX + DistanceY * DistanceY);
 
-      if(distance <= boid->getDetectionRadius())
-      {
-        centerOfMass += neighborhood[i]->getPosition();
-        counter++;
-      }
-    }
+      accumulator += neighborhood[i]->getVelocity();
+      count++;
+
   }
 
-  if(counter == 0) {
-    return Vector2f(0, 0);
-  }
+  //return Vector2f(accumulator / count) * k;
+  averageVelocity = accumulator / count;
 
-  centerOfMass = centerOfMass / counter;
-
-  Vector2f forceDirection = centerOfMass - boid->getPosition();
-
-  double magnitude = sqrt(forceDirection.x * forceDirection.x + forceDirection.y * forceDirection.y);
-  if(magnitude > 0)
-  {
-    Vector2f normalizedForce = Vector2f(forceDirection.x / magnitude, forceDirection.y / magnitude);
-    return normalizedForce * k;
-  }
-
-  return Vector2f(0, 0);
 //end of formal code
 
   return Vector2f::normalized(averageVelocity);
