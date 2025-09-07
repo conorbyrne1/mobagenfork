@@ -9,15 +9,15 @@ Vector2f AlignmentRule::computeForce(const std::vector<Boid*>& neighborhood, Boi
   // hint: iterate over the neighborhood
 
 
-  //code from formal
+  //code from formal - edited to fit into MoBaGEn
   Vector2f accumulator = Vector2f(0, 0);
   int count = 0;
   for(int i = 0; i < neighborhood.size(); i++)
   {
-    //double DistanceX = boids[boidAgentIndex].position.x - boids[i].position.x;
-    //double DistanceY = boids[boidAgentIndex].position.y - boids[i].position.y;
-    //double distance = sqrt(DistanceX * DistanceX + DistanceY * DistanceY);
-
+    // if (neighborhood[i] != boid) {
+    //   accumulator += neighborhood[i]->getVelocity();
+    //   count++;
+    // }
       accumulator += neighborhood[i]->getVelocity();
       count++;
 

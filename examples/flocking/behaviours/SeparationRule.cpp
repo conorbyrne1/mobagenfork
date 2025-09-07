@@ -16,7 +16,7 @@ Vector2f SeparationRule::computeForce(const std::vector<Boid*>& neighborhood, Bo
   //        // todo: find and apply force only on the closest mates
   //    }
 
-// Formal code
+// Formal code - edited to fit into MoBaGEn
   Vector2f accumulator = Vector2f(0, 0);
   Vector2f positionVector = Vector2f(0,0);
   Vector2f unitVector = Vector2f(0, 0);
@@ -47,14 +47,11 @@ Vector2f SeparationRule::computeForce(const std::vector<Boid*>& neighborhood, Bo
   }
   if (accumulator.getMagnitude() > weight)
   {
-    //return (accumulator / accumulator.getMagnitude()) * maxForce;
     separatingForce = (accumulator / accumulator.getMagnitude()) * weight;
   }
   else {
     separatingForce = accumulator;
   }
-
-  //return accumulator;
 
 // End of formal code
 
