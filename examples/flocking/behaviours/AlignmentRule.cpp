@@ -1,6 +1,8 @@
 #include "AlignmentRule.h"
 #include "../gameobjects/Boid.h"
 
+#include <iostream>
+
 Vector2f AlignmentRule::computeForce(const std::vector<Boid*>& neighborhood, Boid* boid) {
   // Try to match the heading of neighbors = Average velocity
   Vector2f averageVelocity = Vector2f::zero();
@@ -24,9 +26,11 @@ Vector2f AlignmentRule::computeForce(const std::vector<Boid*>& neighborhood, Boi
   }
 
   //return Vector2f(accumulator / count) * k;
-  averageVelocity = accumulator / count;
+  if (count > 0)
+    averageVelocity = accumulator / count;
+  //averageVelocity = accumulator / (count +0.00001); // the 0.00001 fixes any potential divide by 0 errors (shoutout james)
 
 //end of formal code
-
+  //std::cout << boid->getPosition().x << ", " << boid->getPosition().y << std::endl;
   return Vector2f::normalized(averageVelocity);
 }
