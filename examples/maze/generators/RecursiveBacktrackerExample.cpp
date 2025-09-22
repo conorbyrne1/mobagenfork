@@ -31,9 +31,16 @@ Point2D RecursiveBacktrackerExample::randomStartPoint(World* world) {
 
 std::vector<Point2D> RecursiveBacktrackerExample::getVisitables(World* w, const Point2D& p) {
   auto sideOver2 = w->GetSize() / 2;
+  // sideOver2 is made to represent 0,0. looks at clear() for how it is used
+  // treat the edges as hard borders, not wrapping like previous assignment
   std::vector<Point2D> visitables;
 
   // todo: implement this
+
+
+  if (p.x == 0) {
+
+  }
 
   return visitables;
 }
