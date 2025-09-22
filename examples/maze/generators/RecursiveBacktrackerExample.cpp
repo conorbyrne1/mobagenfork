@@ -4,6 +4,7 @@
 #include <climits>
 bool RecursiveBacktrackerExample::Step(World* w) {
   // todo: implement this
+
   return false;
 }
 
@@ -37,10 +38,33 @@ std::vector<Point2D> RecursiveBacktrackerExample::getVisitables(World* w, const 
 
   // todo: implement this
 
+  // for (int y = -sideOver2; y <= sideOver2; y++) {
+  //   for (int x = -sideOver2; x <= sideOver2; x++) {
+  //
+  //   }
+  // }
 
-  if (p.x == 0) {
-
+  if (p.x == -sideOver2 && p.y != -sideOver2) {
+    visitables.push_back({p.x, p.y-1});
+    visitables.push_back({p.x+1, p.y});
+    visitables.push_back({p.x, p.y+1});
+  }
+  if (p.y == -sideOver2 && p.x != -sideOver2) {
+    visitables.push_back({p.x + 1, p.y});
+    visitables.push_back({p.x, p.y + 1});
+    visitables.push_back({p.x - 1, p.y});
+  }
+  if (p.x == sideOver2 && p.y != sideOver2) {
+    visitables.push_back({p.x, p.y-1});
+    visitables.push_back({p.x-1, p.y});
+    visitables.push_back({p.x, p.y+1});
+  }
+  if (p.y == sideOver2 && p.x != sideOver2) {
+    visitables.push_back({p.x + 1, p.y});
+    visitables.push_back({p.x, p.y - 1});
+    visitables.push_back({p.x - 1, p.y});
   }
 
   return visitables;
+
 }
