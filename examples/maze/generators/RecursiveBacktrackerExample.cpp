@@ -2,9 +2,137 @@
 #include "Random.h"
 #include "RecursiveBacktrackerExample.h"
 #include <climits>
+#include <stack>
 bool RecursiveBacktrackerExample::Step(World* w) {
   // todo: implement this
 
+  // formal code
+  std::vector<bool> horizontalWalls;
+  std::vector<bool> verticalWalls;
+  std::vector<bool> visited;
+
+  std::vector<Point2D> unvisitedSides;
+  Point2D randomPoint = randomStartPoint(w);
+  std::stack<Point2D> stack;
+
+  visited[0] = true;
+
+  stack.push(randomPoint);
+
+        while (!stack.empty())
+        {
+            Point2D currentCell = stack.top();
+            //int row = currentCell / width;
+            //int col = currentCell % width;
+
+            // up
+            // if (row > 0) {
+            //     size_t upIndex = (row - 1) * width + col;
+            //     if (!visited[upIndex]) {
+            //         unvisitedSides.push_back(upIndex);
+            //     }
+            // }
+          if (currentCell.Up().y != w->GetSize()) {
+            unvisitedSides.push_back(currentCell.Up());
+          }
+            // right
+            // if (col + 1 < width) {
+            //     size_t rightIndex = row * width + (col + 1);
+            //     if (!visited[rightIndex]) {
+            //         unvisitedSides.push_back(rightIndex);
+            //     }
+            // }
+          if (currentCell.Right().x != w->GetSize()) {
+            unvisitedSides.push_back(currentCell.Right());
+          }
+            // down
+            // if (row + 1 < height)
+            // {
+            //     size_t downIndex = (row + 1) * width + col;
+            //     if (!visited[downIndex]) {
+            //         unvisitedSides.push_back(downIndex);
+            //     }
+            // }
+          if (currentCell.Down().y != w->GetSize()) {
+            unvisitedSides.push_back(currentCell.Down());
+          }
+            // left
+            // if (col > 0) {
+            //     size_t leftIndex = row * width + (col - 1);
+            //     if (!visited[leftIndex]) {
+            //         unvisitedSides.push_back(leftIndex);
+            //     }
+            // }
+          if (currentCell.Left().x != w->GetSize()) {
+            unvisitedSides.push_back(currentCell.Left());
+          }
+            if (unvisitedSides.size() == 1)
+            {
+                stack.push(unvisitedSides[0]);
+                visited[unvisitedSides[0]] = true;
+
+                int neighborRow = unvisitedSides[0] / width;
+                int neighborCol = unvisitedSides[0] % width;
+
+                //up
+                if (neighborRow < row)
+                {
+                    horizontalWalls[row * width + col] = false;
+                }
+                //right
+                if (neighborCol > col)
+                {
+                    verticalWalls[row * (width + 1) + (col + 1)] = false;
+                }
+                //down
+                if (neighborRow > row)
+                {
+                    horizontalWalls[(row + 1) * width + col] = false;
+                }
+                //left
+                if (neighborCol < col)
+                {
+                    verticalWalls[row * (width + 1) + col] = false;
+                }
+            }
+            else if (unvisitedSides.size() > 1)
+            {
+                size_t randomIndex = Random::next() % unvisitedSides.size();
+                size_t randomSide = unvisitedSides[randomIndex];
+                stack.push(randomSide);
+                visited[randomSide] = true;
+
+                int neighborRow = randomSide / width;
+                int neighborCol = randomSide % width;
+
+                //up
+                if (neighborRow < row)
+                {
+                    horizontalWalls[row * width + col] = false;
+                }
+                //right
+                if (neighborCol > col)
+                {
+                    verticalWalls[row * (width + 1) + (col + 1)] = false;
+                }
+                //down
+                if (neighborRow > row)
+                {
+                    horizontalWalls[(row + 1) * width + col] = false;
+                }
+                //left
+                if (neighborCol < col)
+                {
+                    verticalWalls[row * (width + 1) + col] = false;
+                }
+            }
+            else
+            {
+                stack.pop();
+            }
+            unvisitedSides.clear();
+        }
+  //end of formal
   return false;
 }
 
@@ -44,26 +172,40 @@ std::vector<Point2D> RecursiveBacktrackerExample::getVisitables(World* w, const 
   //   }
   // }
 
-  if (p.x == -sideOver2 && p.y != -sideOver2) {
-    visitables.push_back({p.x, p.y-1});
+  // if (p.x == -sideOver2 && p.y != -sideOver2) {
+  //   visitables.push_back({p.x, p.y-1});
+  //   visitables.push_back({p.x+1, p.y});
+  //   visitables.push_back({p.x, p.y+1});
+  // }
+  // if (p.y == -sideOver2 && p.x != -sideOver2) {
+  //   visitables.push_back({p.x + 1, p.y});
+  //   visitables.push_back({p.x, p.y + 1});
+  //   visitables.push_back({p.x - 1, p.y});
+  // }
+  // if (p.x == sideOver2 && p.y != sideOver2) {
+  //   visitables.push_back({p.x, p.y-1});
+  //   visitables.push_back({p.x-1, p.y});
+  //   visitables.push_back({p.x, p.y+1});
+  // }
+  // if (p.y == sideOver2 && p.x != sideOver2) {
+  //   visitables.push_back({p.x + 1, p.y});
+  //   visitables.push_back({p.x, p.y - 1});
+  //   visitables.push_back({p.x - 1, p.y});
+  // }
+  if (w->GetNorth(p)) {
+      visitables.push_back({p.x, p.y+1});
+  }
+  if (w->GetEast(p)) {
     visitables.push_back({p.x+1, p.y});
-    visitables.push_back({p.x, p.y+1});
   }
-  if (p.y == -sideOver2 && p.x != -sideOver2) {
-    visitables.push_back({p.x + 1, p.y});
-    visitables.push_back({p.x, p.y + 1});
-    visitables.push_back({p.x - 1, p.y});
-  }
-  if (p.x == sideOver2 && p.y != sideOver2) {
+  if (w->GetSouth(p)) {
     visitables.push_back({p.x, p.y-1});
+  }
+  if (w->GetWest(p)) {
     visitables.push_back({p.x-1, p.y});
-    visitables.push_back({p.x, p.y+1});
   }
-  if (p.y == sideOver2 && p.x != sideOver2) {
-    visitables.push_back({p.x + 1, p.y});
-    visitables.push_back({p.x, p.y - 1});
-    visitables.push_back({p.x - 1, p.y});
-  }
+
+
 
   return visitables;
 
