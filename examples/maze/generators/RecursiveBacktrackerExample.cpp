@@ -6,134 +6,210 @@
 bool RecursiveBacktrackerExample::Step(World* w) {
   // todo: implement this
 
-  // formal code
-  std::vector<bool> horizontalWalls;
-  std::vector<bool> verticalWalls;
-  std::vector<bool> visited;
+  // // formal code
+  // std::vector<bool> horizontalWalls;
+  // std::vector<bool> verticalWalls;
+  // //std::vector<bool> visited;
+  // std::vector<Point2D> visited;
+  //
+  // auto sideOver2 = w->GetSize() / 2;
+  //
+  // std::vector<Point2D> unvisitedSides;
+  // Point2D randomPoint = randomStartPoint(w);
+  // std::stack<Point2D> stack;
+  //
+  // //visited[0] = true;
+  // visited[0] = randomPoint;
+  //
+  // stack.push(randomPoint);
+  //
+  //       while (!stack.empty())
+  //       {
+  //           Point2D currentCell = stack.top();
+  //           //int row = currentCell / width;
+  //           //int col = currentCell % width;
+  //
+  //           // up
+  //         if (currentCell.Up().y != w->GetSize()) {
+  //           unvisitedSides.push_back(currentCell.Up());
+  //         }
+  //           // right
+  //         if (currentCell.Right().x != w->GetSize()) {
+  //           unvisitedSides.push_back(currentCell.Right());
+  //         }
+  //           // down
+  //         if (currentCell.Down().y != w->GetSize()) {
+  //           unvisitedSides.push_back(currentCell.Down());
+  //         }
+  //           // left
+  //         if (currentCell.Left().x != w->GetSize()) {
+  //           unvisitedSides.push_back(currentCell.Left());
+  //         }
+  //           if (unvisitedSides.size() == 1)
+  //           {
+  //               stack.push(unvisitedSides[0]);
+  //               //visited[unvisitedSides[0]] = true;
+  //               //visited[unvisitedSides[0]] = true;
+  //
+  //               int neighborRow = unvisitedSides[0] / width;
+  //               int neighborCol = unvisitedSides[0] % width;
+  //
+  //               //up
+  //               if (neighborRow < row)
+  //               {
+  //                   horizontalWalls[row * width + col] = false;
+  //               }
+  //               //right
+  //               if (neighborCol > col)
+  //               {
+  //                   verticalWalls[row * (width + 1) + (col + 1)] = false;
+  //               }
+  //               //down
+  //               if (neighborRow > row)
+  //               {
+  //                   horizontalWalls[(row + 1) * width + col] = false;
+  //               }
+  //               //left
+  //               if (neighborCol < col)
+  //               {
+  //                   verticalWalls[row * (width + 1) + col] = false;
+  //               }
+  //           }
+  //           else if (unvisitedSides.size() > 1)
+  //           {
+  //               size_t randomIndex = Random::next() % unvisitedSides.size();
+  //               size_t randomSide = unvisitedSides[randomIndex];
+  //               stack.push(randomSide);
+  //               visited[randomSide] = true;
+  //
+  //               int neighborRow = randomSide / width;
+  //               int neighborCol = randomSide % width;
+  //
+  //               //up
+  //               if (neighborRow < row)
+  //               {
+  //                   horizontalWalls[row * width + col] = false;
+  //               }
+  //               //right
+  //               if (neighborCol > col)
+  //               {
+  //                   verticalWalls[row * (width + 1) + (col + 1)] = false;
+  //               }
+  //               //down
+  //               if (neighborRow > row)
+  //               {
+  //                   horizontalWalls[(row + 1) * width + col] = false;
+  //               }
+  //               //left
+  //               if (neighborCol < col)
+  //               {
+  //                   verticalWalls[row * (width + 1) + col] = false;
+  //               }
+  //           }
+  //           else
+  //           {
+  //               stack.pop();
+  //           }
+  //           unvisitedSides.clear();
+  //       }
+  // //end of formal
+  // return false;
 
-  std::vector<Point2D> unvisitedSides;
-  Point2D randomPoint = randomStartPoint(w);
-  std::stack<Point2D> stack;
+  static std::random_device rd;
+  static std::mt19937 gen(rd());
 
-  visited[0] = true;
+  auto sideOver2 = w->GetSize() / 2;
 
-  stack.push(randomPoint);
+  if (stack.empty()) {
+    Point2D startPoint = randomStartPoint(w);
+    stack.push_back(startPoint);
+    visited[startPoint.y][startPoint.x] = true;
+  }
+  if (stack.empty()) {
+    return true;
+  }
 
-        while (!stack.empty())
-        {
-            Point2D currentCell = stack.top();
-            //int row = currentCell / width;
-            //int col = currentCell % width;
+  Point2D currentCell = stack.back();
+  std::vector<Point2D> unvisitedNeighbors;
+  //up
+  if (currentCell.y + 1 <= sideOver2) {
+    Point2D up = {currentCell.x, currentCell.y + 1};
+    if (!visited[up.y][up.x]) {
+      unvisitedNeighbors.push_back(up);
+    }
+  }
 
-            // up
-            // if (row > 0) {
-            //     size_t upIndex = (row - 1) * width + col;
-            //     if (!visited[upIndex]) {
-            //         unvisitedSides.push_back(upIndex);
-            //     }
-            // }
-          if (currentCell.Up().y != w->GetSize()) {
-            unvisitedSides.push_back(currentCell.Up());
-          }
-            // right
-            // if (col + 1 < width) {
-            //     size_t rightIndex = row * width + (col + 1);
-            //     if (!visited[rightIndex]) {
-            //         unvisitedSides.push_back(rightIndex);
-            //     }
-            // }
-          if (currentCell.Right().x != w->GetSize()) {
-            unvisitedSides.push_back(currentCell.Right());
-          }
-            // down
-            // if (row + 1 < height)
-            // {
-            //     size_t downIndex = (row + 1) * width + col;
-            //     if (!visited[downIndex]) {
-            //         unvisitedSides.push_back(downIndex);
-            //     }
-            // }
-          if (currentCell.Down().y != w->GetSize()) {
-            unvisitedSides.push_back(currentCell.Down());
-          }
-            // left
-            // if (col > 0) {
-            //     size_t leftIndex = row * width + (col - 1);
-            //     if (!visited[leftIndex]) {
-            //         unvisitedSides.push_back(leftIndex);
-            //     }
-            // }
-          if (currentCell.Left().x != w->GetSize()) {
-            unvisitedSides.push_back(currentCell.Left());
-          }
-            if (unvisitedSides.size() == 1)
-            {
-                stack.push(unvisitedSides[0]);
-                visited[unvisitedSides[0]] = true;
+  // right
+  if (currentCell.x + 1 <= sideOver2) {
+    Point2D right = {currentCell.x + 1, currentCell.y};
+    if (!visited[right.y][right.x]) {
+      unvisitedNeighbors.push_back(right);
+    }
+  }
 
-                int neighborRow = unvisitedSides[0] / width;
-                int neighborCol = unvisitedSides[0] % width;
+  // down
+  if (currentCell.y - 1 >= -sideOver2) {
+    Point2D down = {currentCell.x, currentCell.y - 1};
+    if (!visited[down.y][down.x]) {
+      unvisitedNeighbors.push_back(down);
+    }
+  }
 
-                //up
-                if (neighborRow < row)
-                {
-                    horizontalWalls[row * width + col] = false;
-                }
-                //right
-                if (neighborCol > col)
-                {
-                    verticalWalls[row * (width + 1) + (col + 1)] = false;
-                }
-                //down
-                if (neighborRow > row)
-                {
-                    horizontalWalls[(row + 1) * width + col] = false;
-                }
-                //left
-                if (neighborCol < col)
-                {
-                    verticalWalls[row * (width + 1) + col] = false;
-                }
-            }
-            else if (unvisitedSides.size() > 1)
-            {
-                size_t randomIndex = Random::next() % unvisitedSides.size();
-                size_t randomSide = unvisitedSides[randomIndex];
-                stack.push(randomSide);
-                visited[randomSide] = true;
+  // left
+  if (currentCell.x - 1 >= -sideOver2) {
+    Point2D left = {currentCell.x - 1, currentCell.y};
+    if (!visited[left.y][left.x]) {
+      unvisitedNeighbors.push_back(left);
+    }
+  }
 
-                int neighborRow = randomSide / width;
-                int neighborCol = randomSide % width;
+  if (unvisitedNeighbors.size() == 1) {
+    Point2D nextCell = unvisitedNeighbors[0];
+    stack.push_back(nextCell);
+    visited[nextCell.y][nextCell.x] = true;
 
-                //up
-                if (neighborRow < row)
-                {
-                    horizontalWalls[row * width + col] = false;
-                }
-                //right
-                if (neighborCol > col)
-                {
-                    verticalWalls[row * (width + 1) + (col + 1)] = false;
-                }
-                //down
-                if (neighborRow > row)
-                {
-                    horizontalWalls[(row + 1) * width + col] = false;
-                }
-                //left
-                if (neighborCol < col)
-                {
-                    verticalWalls[row * (width + 1) + col] = false;
-                }
-            }
-            else
-            {
-                stack.pop();
-            }
-            unvisitedSides.clear();
-        }
-  //end of formal
+    if (nextCell.y > currentCell.y) {
+      w->SetNorth(currentCell, false);
+    }
+    else if (nextCell.x > currentCell.x) {
+      w->SetEast(currentCell, false);
+    }
+    else if (nextCell.y < currentCell.y) {
+      w->SetSouth(currentCell, false);
+    }
+    else if (nextCell.x < currentCell.x) {
+      w->SetWest(currentCell, false);
+    }
+
+  }
+  else if (unvisitedNeighbors.size() > 1)
+    {
+    std::uniform_int_distribution<size_t> dis(0, unvisitedNeighbors.size() - 1);
+    size_t randomIndex = dis(gen);
+    Point2D nextCell = unvisitedNeighbors[randomIndex];
+    stack.push_back(nextCell);
+    visited[nextCell.y][nextCell.x] = true;
+    if (nextCell.y > currentCell.y)
+      {
+      w->SetNorth(currentCell, false);
+    }
+    else if (nextCell.x > currentCell.x) {
+      w->SetEast(currentCell, false);
+    }
+    else if (nextCell.y < currentCell.y) {
+      w->SetSouth(currentCell, false);
+    }
+    else if (nextCell.x < currentCell.x) {
+      w->SetWest(currentCell, false);
+    }
+
+  }
+  else {
+    stack.pop_back();
+  }
+
   return false;
+
 }
 
 void RecursiveBacktrackerExample::Clear(World* world) {
