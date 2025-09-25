@@ -118,6 +118,8 @@ bool RecursiveBacktrackerExample::Step(World* w) {
 
   // NOTE FOR FUTURE SELF -> COLORING THE TILES IS DONE IN WORLD
   //w->SetNodeColor()
+
+  //ALSO THE TOP AND BOTTOM ARE INVERTED -> THIS LEADS TO ISSUES AT THE VERY END
   static std::random_device rd;
   static std::mt19937 gen(rd());
 
@@ -193,9 +195,9 @@ bool RecursiveBacktrackerExample::Step(World* w) {
     std::uniform_int_distribution<size_t> dis(0, unvisitedNeighbors.size() - 1);
     size_t randomIndex = dis(gen);
     Point2D nextCell = unvisitedNeighbors[randomIndex];
-    w->SetNodeColor(nextCell, Color32(255,0,0,255));
     stack.push_back(nextCell);
     visited[nextCell.y][nextCell.x] = true;
+    w->SetNodeColor(nextCell, Color32(255,0,0,255));
     if (nextCell.y > currentCell.y)
       {
       w->SetNorth(currentCell, false);
@@ -212,7 +214,7 @@ bool RecursiveBacktrackerExample::Step(World* w) {
 
   }
   else {
-    w->SetNodeColor(stack.back(), Color32(0,255,0,255));
+    w->SetNodeColor(stack.back(), Color32(0,0,0,255));
     stack.pop_back();
   }
 
