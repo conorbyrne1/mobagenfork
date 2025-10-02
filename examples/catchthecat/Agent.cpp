@@ -10,7 +10,7 @@ using namespace std;
 
 
 std::vector<Point2D> Agent::generatePath(World* w) {
-  unordered_map<Point2D, Point2D> cameFrom;  // to build the flowfield and build the path
+  unordered_map<Point2D, Point2D> cameFrom;  // to build the flowfield and build the path ~~~~ came from[B] = A (left is where you came from)
   queue<Point2D> frontier;                   // to store next ones to visit
   unordered_set<Point2D> frontierSet;        // OPTIMIZATION to check faster if a point is in the queue
   unordered_map<Point2D, bool> visited;      // use .at() to get data, if the element dont exist [] will give you wrong results
@@ -33,9 +33,22 @@ std::vector<Point2D> Agent::generatePath(World* w) {
 
     Point2D current = frontier.front();
     frontierSet.erase(current);
-    visited[current] = true;
+    visited.at(current) = true;
 
-
+    std::vector<Point2D> neighbors = w->neighbors(current);
+    for (auto & neighbor : neighbors) {
+      if (
+        !visited.contains(neighbor) &&
+        neighbor != catPos &&
+        w->catCanMoveToPosition(neighbor) &&
+        w->catcherCanMoveToPosition(neighbor)
+        ){
+        cameFrom.insert({current, neighbor});
+        frontier.push(neighbor);
+        //frontier.Enqueue(neighbor);
+        frontierSet.insert(neighbor);
+      }
+    }
   }
 
   // if the border is not infinity, build the path from border to the cat using the camefrom map
@@ -48,5 +61,7 @@ std::vector<Point2D> Agent::generatePath(World* w) {
 // neighbors need to be: not visited, not cat, not block & not in queue
 // maybe make this a child function or something??
 std::vector<Point2D> Agent::getVisitableNeighbors(World* w, Point2D* current) {
-  std::vector<Point2D> visitableNeighbors;
+  //std::vector<Point2D> visitableNeighbors;
+
+
 }

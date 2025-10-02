@@ -211,6 +211,14 @@ void World::step() {
   }
   auto stop = std::chrono::high_resolution_clock::now();
   moveDuration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count();
+
+  if (catWon) {
+    std::cout << "cat has wone \n";
+  }
+  if (catcherWon) {
+    std::cout << "catcher won \n";
+  }
+
   // change turn
   catTurn = !catTurn;
 }
