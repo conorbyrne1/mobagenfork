@@ -3,11 +3,22 @@
 #include <unordered_map>
 #include <queue>
 #include "World.h"
+
+#include <algorithm>
 using namespace std;
 
 // path finding is done in agent and movement done in specific (cat/catcher)
 // order of completion: agent -> cat -> catcher
 
+
+/*
+*An easy heuristic:
+(sidesize/2) - max(abs(p.x), abs(p.y))
+
+if my size is 11, and the p is (-2, -1)
+the heuristic will give me the distance to the closest border
+ *
+ */
 
 std::vector<Point2D> Agent::generatePath(World* w) {
   unordered_map<Point2D, Point2D> cameFrom;  // to build the flowfield and build the path ~~~~ came from[B] = A (left is where you came from)
@@ -30,7 +41,7 @@ std::vector<Point2D> Agent::generatePath(World* w) {
     // for every neighbor set the cameFrom
     // enqueue the neighbors to frontier and frontierset
     // do this up to find a visitable border and break the loop
-
+/*
     Point2D current = frontier.front();
     frontierSet.erase(current);
     visited.at(current) = true;
@@ -43,10 +54,27 @@ std::vector<Point2D> Agent::generatePath(World* w) {
         w->catCanMoveToPosition(neighbor) &&
         w->catcherCanMoveToPosition(neighbor)
         ){
+        if (neighbor == borderExit) {
+          break;
+        }
         cameFrom.insert({current, neighbor});
         frontier.push(neighbor);
         //frontier.Enqueue(neighbor);
         frontierSet.insert(neighbor);
+      }
+    } */
+ // https://www.redblobgames.com/pathfinding/a-star/introduction.html
+    Point2D current = frontier.front();
+
+    if (current == borderExit) {
+      break;
+    }
+
+    std::vector<Point2D> neighbors = w->neighbors(current);
+    for (auto neighbor : neighbors) {
+      if (!cameFrom.contains(neighbor)) {
+        int priority = heuristic(borderExit, neighbor);
+        cameFrom.emplace(current, neighbor);
       }
     }
   }
@@ -54,7 +82,13 @@ std::vector<Point2D> Agent::generatePath(World* w) {
   // if the border is not infinity, build the path from border to the cat using the camefrom map
   // if there isnt a reachable border, just return empty vector
   // if your vector is filled from the border to the cat, the first element is the catcher move, and the last element is the cat move
-  return vector<Point2D>();
+  std::vector<Point2D> path;
+  for (auto & p : cameFrom) {
+    path.push_back(p.first);
+  }
+  std::reverse(path.begin(), path.end());
+  return path;
+  //return vector<Point2D>();
 }
 
 // return neighbors up right down left
@@ -64,4 +98,9 @@ std::vector<Point2D> Agent::getVisitableNeighbors(World* w, Point2D* current) {
   //std::vector<Point2D> visitableNeighbors;
 
 
+}
+
+int heuristic(Point2D a, Point2D b) {
+// manhattan
+  return abs(a.x - b.x) + abs(a.y - b.y);
 }
