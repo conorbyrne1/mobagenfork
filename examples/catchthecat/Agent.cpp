@@ -10,6 +10,65 @@ using namespace std;
 // path finding is done in agent and movement done in specific (cat/catcher)
 // order of completion: agent -> cat -> catcher
 
+/*
+ from google chat about priority queue (not what I currently have)
+A question about priority queues and unordered map / set
+
+#include <iostream>
+#include <queue>
+#include <unordered_map>
+#include <unordered_set>
+
+struct Point2D {
+    int x;
+    int y;
+
+    Point2D(int x, int y) : x(x), y(y) {}
+
+    bool operator==(const Point2D &other) const {
+        return x == other.x && y == other.y;
+    }
+};
+
+// if we want to use Point 2d as keys on hashtable structures such as umap and uset, you have to tell the STL how to hash Point2D
+template <>
+struct std::hash<Point2D> {
+    std::size_t operator()(const Point2D &p) const {
+        return std::hash<int>()(p.x) ^ (std::hash<int>()(p.y));
+    }
+};
+
+// in order to use Point2D in a priority queue, we need to wrap the Point2D and add a priority field and a comparator telling how to compare two Point2DPrioritized
+struct Point2DPrioritized {
+    Point2D point;
+    int priority;
+
+    Point2DPrioritized(Point2D point, int priority): point(point), priority(priority) {}
+
+    // the < and > are reversed because we will give higher priority to the ones with less value
+    bool operator<(const Point2DPrioritized &other) const {
+        return priority > other.priority;
+    }
+};
+
+int main() {
+    // this will not work!!
+    // std::priority_queue<Point2D> pq;
+    // pq.push(Point2D(1,2));
+
+    std::priority_queue<Point2DPrioritized> pq;
+    // this only works because the Point2DPrioritized has the operator < defined
+    pq.push({Point2D(1,2), 5});
+
+    std::unordered_set<Point2D> visited;
+    // this only work because we have created the hash<Point2D> specialization at the namespace of the std
+    visited.insert(Point2D(1,2));
+    // the same thing works for unordered_map
+    std::unordered_map<Point2D, int> point_to_value;
+    point_to_value[Point2D(1,2)] = 42;
+}
+ */
+
 
 /*
 *An easy heuristic:
