@@ -2,6 +2,7 @@
 #define CATCHER_H
 
 #include "Agent.h"
+#include "IAgent.h"
 
 class Catcher : public Agent {
 public:

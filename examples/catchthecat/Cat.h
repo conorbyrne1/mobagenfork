@@ -2,6 +2,7 @@
 #define CAT_H
 
 #include "Agent.h"
+#include "IAgent.h"
 
 class Cat : public Agent {
 public:
