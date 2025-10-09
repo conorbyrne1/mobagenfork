@@ -21,86 +21,91 @@ the heuristic will give me the distance to the closest border
  */
 
 std::vector<Point2D> Agent::generatePath(World* w) {
-  unordered_map<Point2D, Point2D> cameFrom;  // to build the flowfield and build the path ~~~~ came from[B] = A (left is where you came from)
-  queue<Point2D> frontier;                   // to store next ones to visit
-  unordered_set<Point2D> frontierSet;        // OPTIMIZATION to check faster if a point is in the queue
-  unordered_map<Point2D, bool> visited;      // use .at() to get data, if the element dont exist [] will give you wrong results
+//   unordered_map<Point2D, Point2D> cameFrom;  // to build the flowfield and build the path ~~~~ came from[B] = A (left is where you came from)
+//   queue<Point2D> frontier;                   // to store next ones to visit
+//   unordered_set<Point2D> frontierSet;        // OPTIMIZATION to check faster if a point is in the queue
+//   unordered_map<Point2D, bool> visited;      // use .at() to get data, if the element dont exist [] will give you wrong results
+//
+//   // bootstrap state
+//   auto catPos = w->getCat();
+//   frontier.push(catPos);
+//   frontierSet.insert(catPos);
+//   Point2D borderExit = Point2D::INFINITE;  // if at the end of the loop we dont find a border, we have to return random points
+//
+//   while (!frontier.empty()) {
+//     // get the current from frontier
+//     // remove the current from frontierset
+//     // mark current as visited
+//     // getVisitableNeighbors(world, current) returns a vector of neighbors that are not visited, not cat, not block, not in the queue
+//     // iterate over the neighs:
+//     // for every neighbor set the cameFrom
+//     // enqueue the neighbors to frontier and frontierset
+//     // do this up to find a visitable border and break the loop
+//  // https://www.redblobgames.com/pathfinding/a-star/introduction.html
 
-  // bootstrap state
-  auto catPos = w->getCat();
-  frontier.push(catPos);
-  frontierSet.insert(catPos);
-  Point2D borderExit = Point2D::INFINITE;  // if at the end of the loop we dont find a border, we have to return random points
+  //~~~~~~ this section was made with the help of Claude AI - not entirely AI made but it fixed the stuff I did wrong
+  auto compare = [](pair<int, Point2D> a, pair<int, Point2D> b) {
+    return a.first > b.first;
+  };
+
+  priority_queue<pair<int, Point2D>, vector<pair<int, Point2D>>, decltype(compare)> frontier(compare);
+  //~~~~~~ end of section
+
+  unordered_map<Point2D, Point2D> cameFrom;
+  unordered_map<Point2D, int> costSoFar;
+
+  auto start = w->getCat();
+  auto sideSize = w->getWorldSideSize();
+  auto sideOver2 = sideSize / 2;
+
+  frontier.push({0, start});
+  cameFrom[start] = Point2D::INFINITE;
+  costSoFar[start] = 0;
+
+  Point2D goal = Point2D::INFINITE;
 
   while (!frontier.empty()) {
-    // get the current from frontier
-    // remove the current from frontierset
-    // mark current as visited
-    // getVisitableNeighbors(world, current) returns a vector of neighbors that are not visited, not cat, not block, not in the queue
-    // iterate over the neighs:
-    // for every neighbor set the cameFrom
-    // enqueue the neighbors to frontier and frontierset
-    // do this up to find a visitable border and break the loop
-/*
-    Point2D current = frontier.front();
-    frontierSet.erase(current);
-    visited.at(current) = true;
+    Point2D current = frontier.top().second;
+    frontier.pop();
 
-    std::vector<Point2D> neighbors = w->neighbors(current);
-    for (auto & neighbor : neighbors) {
-      if (
-        !visited.contains(neighbor) &&
-        neighbor != catPos &&
-        w->catCanMoveToPosition(neighbor) &&
-        w->catcherCanMoveToPosition(neighbor)
-        ){
-        if (neighbor == borderExit) {
-          break;
-        }
-        cameFrom.insert({current, neighbor});
-        frontier.push(neighbor);
-        //frontier.Enqueue(neighbor);
-        frontierSet.insert(neighbor);
-      }
-    } */
- // https://www.redblobgames.com/pathfinding/a-star/introduction.html
-    Point2D current = frontier.front();
-
-    if (current == borderExit) {
+    if (w->catWinsOnSpace(current)) {
+      goal = current;
       break;
     }
 
-    std::vector<Point2D> neighbors = w->neighbors(current);
-    for (auto neighbor : neighbors) {
-      if (!cameFrom.contains(neighbor)) {
-        int priority = heuristic(borderExit, neighbor);
-        cameFrom.emplace(current, neighbor);
+    // return neighbors up right down left
+    // neighbors need to be: not visited, not cat, not block & not in queue
+
+    for (auto next : World::neighbors(current)) {
+      if (!w->isValidPosition(next) || w->getContent(next)) {
+        continue;
+      }
+
+      int newCost = costSoFar[current] + 1;
+      if (!costSoFar.contains(next) || newCost < costSoFar[next]) {
+        costSoFar[next] = newCost;
+        int priority = newCost + (sideOver2 - max(abs(next.x), abs(next.y)));
+        frontier.push({priority, next});
+        cameFrom[next] = current;
       }
     }
   }
 
-  // if the border is not infinity, build the path from border to the cat using the camefrom map
-  // if there isnt a reachable border, just return empty vector
-  // if your vector is filled from the border to the cat, the first element is the catcher move, and the last element is the cat move
   std::vector<Point2D> path;
-  for (auto & p : cameFrom) {
-    path.push_back(p.first);
+  if (goal != Point2D::INFINITE) {
+    Point2D current = goal;
+    while (current != start) {
+      path.push_back(current);
+      current = cameFrom[current];
+    }
+    std::reverse(path.begin(), path.end());
   }
-  std::reverse(path.begin(), path.end());
+
   return path;
-  //return vector<Point2D>();
 }
 
-// return neighbors up right down left
-// neighbors need to be: not visited, not cat, not block & not in queue
-// maybe make this a child function or something??
-std::vector<Point2D> Agent::getVisitableNeighbors(World* w, Point2D* current) {
-  //std::vector<Point2D> visitableNeighbors;
 
-
-}
-
-int heuristic(Point2D a, Point2D b) {
-// manhattan
-  return abs(a.x - b.x) + abs(a.y - b.y);
-}
+// int heuristic(Point2D a, Point2D b) {
+// // manhattan
+//   return abs(a.x - b.x) + abs(a.y - b.y);
+// }
